@@ -12,5 +12,12 @@ license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = ["typesafe-sdk>=0.7.1,<0.8"]
 
+[project.urls]
+Repository = "https://github.com/TypeLLM/pijev"
+Issues = "https://github.com/TypeLLM/pijev/issues"
+
+[tool.setuptools]
+packages = ["pijev"]
+
 [tool.setuptools.package-data]
 pijev = ["py.typed"]

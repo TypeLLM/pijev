@@ -59,7 +59,7 @@ One request, two questions, one shared state. A live `jev-1.13.0` run returned:
 
 Both selected `billing`, but its probability changed by **20 percentage points**.
 This run also changes question IDs and does not control model randomness; see the
-[experiment details](examples/README.md).
+[experiment details](https://github.com/TypeLLM/pijev/blob/main/examples/README.md).
 
 ## How pijev works
 
@@ -79,7 +79,7 @@ T = technical.
 
 The `pijev mean` column averages all six predictions: `billing` receives **0.555**,
 compared with 0.46–0.64 across individual orderings.
-[Reproduce this run](examples/compare_all_orders.py) · [Recorded results](examples/six_orders_result.json)
+[Reproduce this run](https://github.com/TypeLLM/pijev/blob/main/examples/compare_all_orders.py) · [Recorded results](https://github.com/TypeLLM/pijev/blob/main/examples/six_orders_result.json)
 
 Ask once using the same SDK interface; pijev handles the six-question batch and
 returns one aggregated answer:
@@ -117,10 +117,10 @@ Live results may differ from the recorded run.
 
 ## Usage
 
-Install from this repository (not yet published to PyPI):
+Install from PyPI:
 
 ```bash
-pip install -e .
+pip install pijev
 export TYPESAFE_API_KEY=your-key
 ```
 
@@ -228,4 +228,4 @@ backend, and retries may add requests.
 
 ## License
 
-[Apache License 2.0](LICENSE).
+[Apache License 2.0](https://github.com/TypeLLM/pijev/blob/main/LICENSE).
