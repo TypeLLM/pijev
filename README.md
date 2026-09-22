@@ -121,6 +121,11 @@ Install from PyPI:
 
 ```bash
 pip install pijev
+```
+
+Set your API key:
+
+```bash
 export TYPESAFE_API_KEY=your-key
 ```
 
