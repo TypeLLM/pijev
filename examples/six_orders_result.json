@@ -1,0 +1,106 @@
+{
+  "model": "jev-1.13.0",
+  "usage": {
+    "input_tokens": 835,
+    "output_tokens": 244
+  },
+  "orders": {
+    "__pijev_0": [
+      "account",
+      "billing",
+      "technical"
+    ],
+    "__pijev_1": [
+      "account",
+      "technical",
+      "billing"
+    ],
+    "__pijev_2": [
+      "billing",
+      "account",
+      "technical"
+    ],
+    "__pijev_3": [
+      "billing",
+      "technical",
+      "account"
+    ],
+    "__pijev_4": [
+      "technical",
+      "account",
+      "billing"
+    ],
+    "__pijev_5": [
+      "technical",
+      "billing",
+      "account"
+    ]
+  },
+  "answers": {
+    "__pijev_0": {
+      "type": "choice",
+      "choice": "billing",
+      "confidence": 0.37,
+      "probabilities": {
+        "billing": 0.58,
+        "account": 0.25,
+        "technical": 0.17
+      }
+    },
+    "__pijev_1": {
+      "type": "choice",
+      "choice": "billing",
+      "confidence": 0.46,
+      "probabilities": {
+        "billing": 0.64,
+        "account": 0.28,
+        "technical": 0.08
+      }
+    },
+    "__pijev_2": {
+      "type": "choice",
+      "choice": "billing",
+      "confidence": 0.38,
+      "probabilities": {
+        "account": 0.31,
+        "billing": 0.58,
+        "technical": 0.11
+      }
+    },
+    "__pijev_3": {
+      "type": "choice",
+      "choice": "billing",
+      "confidence": 0.19,
+      "probabilities": {
+        "billing": 0.46,
+        "account": 0.31,
+        "technical": 0.23
+      }
+    },
+    "__pijev_4": {
+      "type": "choice",
+      "choice": "billing",
+      "confidence": 0.21,
+      "probabilities": {
+        "billing": 0.47,
+        "account": 0.41,
+        "technical": 0.12
+      }
+    },
+    "__pijev_5": {
+      "type": "choice",
+      "choice": "billing",
+      "confidence": 0.4,
+      "probabilities": {
+        "billing": 0.6,
+        "account": 0.28,
+        "technical": 0.12
+      }
+    }
+  },
+  "pijev_mean": {
+    "billing": 0.555,
+    "technical": 0.13833333333333334,
+    "account": 0.3066666666666667
+  }
+}

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pijev"
+version = "0.1.0"
+description = "Permutation Invariant Jev — third-party permutation averaging for TypeSafe Choice"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+dependencies = ["typesafe-sdk>=0.7.1,<0.8"]
+
+[tool.setuptools.package-data]
+pijev = ["py.typed"]
