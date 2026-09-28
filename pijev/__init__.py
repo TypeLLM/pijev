@@ -16,8 +16,27 @@ ResponseT = TypeVar("ResponseT", bound=BaseModel)
 
 
 def _validate_budget(budget):
-    if budget != "all" and (type(budget) is not int or budget <= 0):
-        raise ValueError("n_permutations must be a positive integer or 'all'")
+    if budget not in ("all", "auto") and (type(budget) is not int or budget <= 0):
+        raise ValueError("n_permutations must be a positive integer, 'auto' or 'all'")
+
+
+def _balanced_orders(count):
+    """A balanced Latin square (Williams design) on positions 0..count-1.
+
+    Every option takes every position equally often and follows every other
+    option equally often: count orders when count is even, 2*count when odd.
+    """
+    first, low, high = [0], 1, count - 1
+    while len(first) < count:
+        first.append(low)
+        low += 1
+        if len(first) < count:
+            first.append(high)
+            high -= 1
+    rows = [tuple((item + shift) % count for item in first) for shift in range(count)]
+    if count % 2:
+        rows += [row[::-1] for row in rows]
+    return list(dict.fromkeys(rows))
 
 
 def _prepare(questions, budget, seed):
@@ -36,12 +55,17 @@ def _prepare(questions, budget, seed):
         if not labels:
             raise ValueError("Choice criteria must not be empty")
         total = factorial(len(labels))
-        count = total if budget == "all" else min(budget, total)
+        if budget == "auto":
+            # Labels are sorted, so the orders do not depend on how the criteria were written.
+            orders = [tuple(labels[i] for i in row) for row in _balanced_orders(len(labels))]
+            count = len(orders)
+        else:
+            count = total if budget == "all" else min(budget, total)
         if len(expanded) + count > 720:
             raise ValueError("At most 720 expanded questions per request")
-        if count == total:
+        if budget != "auto" and count == total:
             orders = permutations(labels)
-        else:
+        elif budget != "auto":
             rng, selected = Random(seed), {}
             while len(selected) < count:
                 selected[tuple(rng.sample(labels, len(labels)))] = None
@@ -117,7 +141,7 @@ def _request_inputs(state, questions, extra_body, budget, seed):
 class TypeSafeClient(_Client):
     """Official sync client interface; Choice permutations share one request."""
 
-    def __init__(self, *args: Any, n_permutations: int | Literal["all"] = 8,
+    def __init__(self, *args: Any, n_permutations: int | Literal["auto", "all"] = "auto",
                  seed: int | None = None, **kwargs: Any) -> None:
         _validate_budget(n_permutations)
         super().__init__(*args, **kwargs)
@@ -150,7 +174,7 @@ class TypeSafeClient(_Client):
 class AsyncTypeSafeClient(_AsyncClient):
     """Official async client interface with the same aggregation as sync."""
 
-    def __init__(self, *args: Any, n_permutations: int | Literal["all"] = 8,
+    def __init__(self, *args: Any, n_permutations: int | Literal["auto", "all"] = "auto",
                  seed: int | None = None, **kwargs: Any) -> None:
         _validate_budget(n_permutations)
         super().__init__(*args, **kwargs)

@@ -66,15 +66,34 @@ class Tests(unittest.TestCase):
             self.assertAlmostEqual(p, 1 / 3)
 
     def test_seed_and_multiple_choices(self):
-        client = self.client(seed=42)
-        q = {'type': 'choice', 'criteria': dict.fromkeys('abcd')}
+        client = self.client(n_permutations=8, seed=42)  # sampled orders
+        q = {'type': 'choice', 'criteria': dict.fromkeys('abcdefgh')}
         a = client.system_one('x', {'q': q, 'second': Choice(criteria={'only': None})})
-        q['criteria'] = dict.fromkeys('dcba')
+        q['criteria'] = dict.fromkeys('hgfedcba')
         b = client.system_one('x', {'q': q, 'second': Choice(criteria={'only': None})})
         self.assertEqual(a.answers, b.answers)
         self.assertEqual(self.bodies[0], self.bodies[1])
         orders = [tuple(q['criteria']) for q in self.bodies[0]['questions'].values()]
         self.assertEqual(len(set(orders)), 9)
+
+    def test_auto_balances_positions_and_neighbours(self):
+        for options, expected in [('ab', 2), ('abc', 6), ('abcd', 4), ('abcde', 10), ('abcdefghij', 10)]:
+            with self.subTest(options=options):
+                self.bodies.clear()
+                self.client().system_one('x', {'q': Choice(criteria=dict.fromkeys(options[::-1]))})
+                orders = [tuple(q['criteria']) for q in self.bodies[0]['questions'].values()]
+                self.assertEqual(len(orders), expected)
+                self.assertEqual(len(set(orders)), expected)
+                k = len(options)
+                for label in options:  # every option in every position equally often
+                    self.assertEqual({sum(order[i] == label for order in orders) for i in range(k)},
+                                     {expected // k})
+                follows = {}
+                for order in orders:
+                    for before, after in zip(order, order[1:]):
+                        follows[before, after] = follows.get((before, after), 0) + 1
+                self.assertEqual(len(set(follows.values())), 1)  # and after every other option equally often
+                self.assertEqual(len(follows), k * (k - 1))
 
     def test_custom_response_models(self):
         class Typed(SystemOneResponse):

@@ -142,9 +142,13 @@ Set an optional permutation budget:
 client = TypeSafeClient(n_permutations=16, seed=42)
 ```
 
-The default is **up to 8 distinct permutations per Choice**. Smaller sets use all
-permutations; larger sets use uniform sampling without replacement. Set
-`n_permutations="all"` for full enumeration. The seed controls local sampling only.
+The default, `n_permutations="auto"`, evaluates a **balanced set of orderings** (a
+Williams design): every option takes every position, and follows every other
+option, equally often. That is $K$ orderings for $K$ options, or $2K$ when $K$ is
+odd, and they do not depend on the order the criteria were written in. An integer
+budget samples that many distinct permutations uniformly without replacement (all
+of them when there are fewer), and `n_permutations="all"` enumerates every one.
+The seed controls local sampling only.
 Batches are capped at 720 expanded questions and remain subject to server limits.
 
 Async usage works the same way: import `AsyncTypeSafeClient` from `pijev`, then use
@@ -187,14 +191,15 @@ for related symmetry-averaging theory.
 
 ## Cost analysis
 
-For $K$ options and budget $B$, pijev evaluates $M=\min(B,K!)$ permutations in
-**one HTTP request**. Multiple Choices contribute their own permutations;
+For $K$ options, pijev evaluates $M$ permutations in **one HTTP request**: $K$, or
+$2K$ for odd $K$, by default, and $\min(B,K!)$ with an integer budget $B$. Multiple Choices contribute their own permutations;
 Noul and Score each add one unchanged question.
 
 | Workload | Questions in one request |
 | --- | ---: |
-| 3 options, default budget 8 | 6 |
-| 10 options, default budget 8 | 8 |
+| 3 options, default | 6 |
+| 4 options, default | 4 |
+| 10 options, default | 10 |
 | Two Choices with 3 options each | 12 |
 | 3 options plus one Noul | 7 |
 
