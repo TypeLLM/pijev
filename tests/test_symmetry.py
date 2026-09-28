@@ -110,9 +110,21 @@ class Tests(unittest.TestCase):
             self.bad = bad
             with self.assertRaises(ValueError):
                 self.client().system_one('x', {'q': Choice(criteria=dict.fromkeys('ab'))})
+        self.bad = {'a': 0.45, 'b': 0.45}  # 0.90 is more than two options' rounding
+        with self.assertRaises(ValueError):
+            self.client().system_one('x', {'q': Choice(criteria=dict.fromkeys('ab'))})
         self.bad, self.omit = None, True
         with self.assertRaises(ValueError):
             self.client().system_one('x', {'q': Choice(criteria=dict.fromkeys('ab'))})
+
+    def test_rounded_probabilities_of_many_options_are_accepted(self):
+        # Two-decimal probabilities of 12 options can sum to 0.99, as the live API returns.
+        labels = [f'o{i}' for i in range(12)]
+        self.bad = {label: 0.08 for label in labels[:-1]} | {labels[-1]: 0.11}
+        result = self.client().system_one('x', {'q': Choice(criteria=dict.fromkeys(labels))})
+        probabilities = result.choices['q'].probabilities
+        self.assertAlmostEqual(sum(probabilities.values()), 1.0)
+        self.assertEqual(result.choices['q'].choice, labels[-1])
 
     def test_async(self):
         async def run():
