@@ -136,20 +136,25 @@ Change only the import:
 +from pijev import TypeSafeClient, Choice, Noul, Score
 ```
 
-Set an optional permutation budget:
+By default, each Choice is asked in a balanced set of orderings
+(`n_permutations="auto"`): every option appears in every position, and after every
+other option, equally often. That takes K orderings for K options, or 2K when K is
+odd, and the result does not depend on the order you wrote the criteria in.
 
 ```python
-client = TypeSafeClient(n_permutations=16, seed=42)
+client = TypeSafeClient()  # n_permutations="auto"
 ```
 
-The default, `n_permutations="auto"`, evaluates a **balanced set of orderings** (a
-Williams design): every option takes every position, and follows every other
-option, equally often. That is $K$ orderings for $K$ options, or $2K$ when $K$ is
-odd, and they do not depend on the order the criteria were written in. An integer
-budget samples that many distinct permutations uniformly without replacement (all
-of them when there are fewer), and `n_permutations="all"` enumerates every one.
-The seed controls local sampling only.
-Batches are capped at 720 expanded questions and remain subject to server limits.
+To use a different number of orderings:
+
+```python
+client = TypeSafeClient(n_permutations=16, seed=42)  # 16 random orderings
+client = TypeSafeClient(n_permutations="all")        # every ordering
+```
+
+An integer samples that many distinct orderings at random (all of them when there
+are fewer), and `seed` fixes that sample. A request holds at most 720 expanded
+questions and is subject to the server's limits.
 
 Async usage works the same way: import `AsyncTypeSafeClient` from `pijev`, then use
 `async with` and `await client.system_one(...)` as usual.
