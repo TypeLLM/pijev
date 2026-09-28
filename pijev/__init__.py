@@ -81,7 +81,9 @@ def _aggregate(response, questions, groups, response_model):
             if any(not isfinite(p) or not 0 <= p <= 1 for p in raw.values()):
                 raise ValueError("Backend probabilities must be finite and between 0 and 1")
             mass = fsum(raw.values())
-            if not isclose(mass, 1.0, rel_tol=0, abs_tol=1e-3):
+            # The API rounds each probability to two decimals, so the sum may be off by
+            # up to 0.005 per option; the renormalisation below absorbs it.
+            if mass <= 0 or not isclose(mass, 1.0, rel_tol=0, abs_tol=0.005 * len(labels) + 1e-9):
                 raise ValueError("Backend probabilities must sum to approximately 1")
             rows.append({label: raw[label] / mass for label in labels})
         means = {label: fsum(row[label] for row in rows) / len(rows) for label in labels}
